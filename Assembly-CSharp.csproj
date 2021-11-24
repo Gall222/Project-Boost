@@ -53,7 +53,8 @@
     <UnityVersion>2020.3.17f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Assets\Rocket.cs" />
+    <Compile Include="Assets\Scripts\Rocket.cs" />
+    <Compile Include="Assets\Scripts\Oscillator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
