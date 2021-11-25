@@ -20,6 +20,8 @@ public class Rocket : MonoBehaviour
     Rigidbody rigidbody;
     AudioSource audioSource;
 
+    bool isCollisionAnabled = true;
+
     enum State { Alive, Dying, Transcending}
     State state = State.Alive;
 
@@ -39,9 +41,26 @@ public class Rocket : MonoBehaviour
 
     private void ProcessInput()
     {
+        
+        if (Debug.isDebugBuild)
+        {
+            RespondToDebugKeys();
+        }
         if (state != State.Alive) { return; }
         RespondToThrust();
         RespondToRotateInput();
+    }
+
+    private void RespondToDebugKeys()
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            LoadNextLvl();
+        }
+        else if (Input.GetKeyDown(KeyCode.C))
+        {
+            isCollisionAnabled = !isCollisionAnabled;
+        }
     }
 
     private void RespondToThrust()
@@ -59,7 +78,7 @@ public class Rocket : MonoBehaviour
 
     private void ApplyThrust()
     {
-        rigidbody.AddRelativeForce(Vector3.up * thrustSpeed * Time.deltaTime);
+        rigidbody.AddRelativeForce(Vector3.up * thrustSpeed);
         if (!audioSource.isPlaying)
         {
             //audioSource.Play();
@@ -85,7 +104,7 @@ public class Rocket : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (state != State.Alive) { return; }
+        if (state != State.Alive || !isCollisionAnabled) { return; }
         switch (collision.gameObject.tag)
         {
             case "Friendly":
@@ -113,8 +132,12 @@ public class Rocket : MonoBehaviour
 
     private void LoadNextLvl()
     {
-        //sceneIndex = SceneManager.GetSceneByBuildIndex
-        SceneManager.LoadScene(1);
+        var sceneIndex = SceneManager.GetActiveScene().buildIndex;
+        var nexLvlIndex = sceneIndex + 1;
+        if (nexLvlIndex == SceneManager.sceneCountInBuildSettings) {
+            nexLvlIndex = 0;
+        }
+            SceneManager.LoadScene(nexLvlIndex);
     }
 
     private void PlayerDeathProcces()
@@ -129,7 +152,7 @@ public class Rocket : MonoBehaviour
     private void PlayerDeath()
     {
         //Destroy(gameObject);
-
-        SceneManager.LoadScene(0);
+        var sceneIndex = SceneManager.GetActiveScene().buildIndex;
+        SceneManager.LoadScene(sceneIndex); 
     }
 }
